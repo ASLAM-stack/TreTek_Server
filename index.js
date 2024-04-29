@@ -44,6 +44,11 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result)
     })
+    app.get('/countryList',async(req,res) =>{
+      const cursor = countryCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
+    })
     app.get('/spot/:id',async(req,res)=>{
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
@@ -54,6 +59,12 @@ async function run() {
     app.get('/mylist/:email', async (req,res)=>{
        const email = req.params.email;
        const query = {user_email:email}
+       const result = await spotCollection.find(query).toArray();
+       res.send(result)
+    })
+    app.get('/country/:country_Name', async (req,res)=>{
+       const country = req.params.country_Name;
+       const query = {country_Name:country}
        const result = await spotCollection.find(query).toArray();
        res.send(result)
     })
@@ -81,7 +92,11 @@ async function run() {
       res.send(result)
     })
     app.delete('/spot/:id',async (req,res) =>{
-      
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await spotCollection.deleteOne(query)
+      res.send(result)
+
     })
 
   } finally {
