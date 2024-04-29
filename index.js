@@ -31,6 +31,7 @@ async function run() {
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
     const spotCollection = client.db("touristSpotDB").collection("touristSpot");
+    const countryCollection = client.db("touristSpotDB").collection("countryList");
     // Add Tourist Spot
     app.post('/addTouristSpot',  async(req,res) =>{
       const spot = req.body;
@@ -48,6 +49,39 @@ async function run() {
       const query = {_id: new ObjectId(id)}
       const result = await spotCollection.findOne(query)
       res.send(result)
+    })
+
+    app.get('/mylist/:email', async (req,res)=>{
+       const email = req.params.email;
+       const query = {user_email:email}
+       const result = await spotCollection.find(query).toArray();
+       res.send(result)
+    })
+    app.put('/update/:id', async (req,res) =>{
+      const id = req.params.id;
+      const info = req.body;
+      const filter = {_id: new ObjectId(id)}
+      const option = {upsert:true}
+      const UpdatedInfo = {
+        $set:{
+          image:info.image,
+          tourists_spot_name:info.tourists_spot_name,
+          country_Name:info.country_Name,
+          location:info.location,
+          short_description:info.short_description,
+          average_cost:info.average_cost,
+          seasonality:info.seasonality,
+          travel_time:info.travel_time,
+          totalVisitors_PerYear:info.totalVisitors_PerYear,
+          user_name:info.user_name,
+          user_email:info.user_email
+        }
+      }
+      const result =await spotCollection.updateOne(filter,UpdatedInfo,option);
+      res.send(result)
+    })
+    app.delete('/spot/:id',async (req,res) =>{
+      
     })
 
   } finally {
